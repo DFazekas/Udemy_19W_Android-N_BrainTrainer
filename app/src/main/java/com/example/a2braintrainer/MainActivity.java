@@ -30,12 +30,15 @@ public class MainActivity extends AppCompatActivity {
     private int correctAnswer; // Correct answer to the displayed question.
     private int score = 0;  // Total score.
     private int questionNum = 0; // Total questions asked.
+    private CountDownTimer countDownTimer;
+    private long countDownPeriod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        countDownPeriod = 10000;
         this.setupViews();
     }
 
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onStart(View view) {
         startBtn.setVisibility(View.INVISIBLE);
+        countDownPeriod = 10000;
         this.startGame();
         tableLayout.setVisibility(View.VISIBLE);
         resultTxt.setText("");
@@ -125,8 +129,19 @@ public class MainActivity extends AppCompatActivity {
             // Update and display score.
             this.score += 1;
             this.scoreTxt.setText(String.valueOf(this.score));
+
+            // Update timer.
+            countDownPeriod += 2000;
+            countDownTimer.cancel();
+            setTimer();
+
         } else {
             msg = "INCORRECT :(";
+
+            // Update timer.
+            countDownPeriod -= 2000;
+            countDownTimer.cancel();
+            setTimer();
         }
 
         // Display result.
@@ -140,11 +155,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setTimer() {
-        new CountDownTimer(10000, 1000) {
+        countDownTimer = new CountDownTimer(countDownPeriod, 1000) {
 
             @Override
             public void onTick(long millisUntilFinished) {
                 timerTxt.setText(String.valueOf(millisUntilFinished / 1000) + "s");
+                countDownPeriod = millisUntilFinished;
             }
 
             @Override
